@@ -18,9 +18,9 @@ import matplotlib.pyplot as plt
 import math
 from matplotlib.backends.backend_pdf import PdfPages
 
+import os
 
 # In[2]:
-
 
 class TweetDataset(utils.Dataset):
     def __init__(self, path='Tweets.csv'):
@@ -41,36 +41,68 @@ class TweetDataset(utils.Dataset):
 
 
 class net(nn.Module):
-    def __init__(self, transformer):
-        super(net, self).__init__()
-        self.transformer = transformer
-        self.linear = nn.Linear(in_features=..., out_features=2, bias=True)
+	def __init__(self, transformer, extract_method, tokenizer=None):
+		super(net, self).__init__()
+		self.transformer = transformer.eval()
+		self.extract_method = extract_method
+		self.tokenizer = tokenizer if tokenizer else lambda x: x
+		# in_feature sizes
+		# Bert: (batch_size, sequence_length, hidden_size)
+		# 
+		self.linear = nn.Linear(in_features=..., out_features=3, bias=True)
         
-    def forward(self, x):
-        x_hat = self.transformer(x)
-        y = self.linear(x_hat)
-        return y
+	def forward(self, x):
+		x_hat = self.tokenizer(x)
+		x_hat = self.extract_method(self.transformer(x_hat))
+		y = self.linear(x_hat)
+		return y
 
 
 # In[4]:
 
+path='Tweets.csv'
 
-dataset = TweetDataset()
+dataset = TweetDataset(path)
 train_ration = 0.7
 train_dataset, test_dataset = utils.random_split(dataset, [int(len(dataset)*0.7), len(dataset)-int(len(dataset)*0.7)])
 
 train_loader = utils.DataLoader(train_dataset)
 test_loader = utils.DataLoader(test_dataset)
 
+cache = pd.read_csv(path)
+vocab = set()
+cache.Tweets.str.lower().str.split().apply(vocab.update)
+cache = None
 
 # In[7]:
 
-
 # model creation
+'''
+os.system('git clone https://github.com/huggingface/transformers')
+os.system('git clone https://github.com/pytorch/fairseq')
+os.system('git clone https://github.com/zihangdai/xlnet/')
+'''
+
+from transformers import BertModel, BertConfig
+# from fairseq.fairseq.models.roberta import RobertaModel
+import xlnet.xlnet as xlnet
+
+bert_config = BertConfig()
+bert_model = BertModel(bert_config)
+bert_model.eval()
+bert_result = lambda x: x[0]
+
+roberta_model = load('pytorch/fairseq', 'roberta.large.mnli')
+roberta_model.eval()
+roberta_result = roberta_model.extract_features
+
+xlnet_model = xlnet.XLNetModel()
+xlnet_result = lambda x: x.get_sequence_output()
+
 models = {
-    'Bert': net(load('pytorch/fairseq', 'model', 'bert-base', pretrained=True)),
-    'Roberta': net(load('pytorch/fairseq', 'model', 'roberta.base', pretrained=True)),
-    'XLNet': net(load('pytorch/fairseq', 'model', 'xlnet.base', pretrained=True))
+    'Bert': net(bert_model, bert_result),
+    'Roberta': net(roberta_model, roberta_result),
+    'XLNet': net(xlnet_model, xlnet_result)
 }
 
 
@@ -126,6 +158,8 @@ for key in models.keys():
         accuracies.append(accuracy)
         f1_scores.append(f1)
     
+    torch.save(model.state_dict(), '{}_baseline.pt'.format(key))
+
     axs[index, 0].set_title('Accuracy vs Epochs for {}'.format(key.lower().capitalize()))
     axs[index, 0].set_xlabel('Number of Epochs Trained')
     axs[index, 0].set_ylabel('Test Accuracy on Sentiment Classification Task')
