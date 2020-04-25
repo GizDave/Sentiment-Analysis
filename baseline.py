@@ -41,21 +41,24 @@ class TweetDataset(utils.Dataset):
 
 
 class net(nn.Module):
-	def __init__(self, transformer, extract_method, tokenizer=None):
+	def __init__(self, tokenizer, model, extract_method):
 		super(net, self).__init__()
-		self.transformer = transformer.eval()
+		self.model = model
 		self.extract_method = extract_method
 		self.tokenizer = tokenizer if tokenizer else lambda x: x
+		self.m = nn.AvgPool1d(3, stride=2)
 		# in_feature sizes
 		# Bert: (batch_size, sequence_length, hidden_size)
 		# 
-		self.linear = nn.Linear(in_features=..., out_features=3, bias=True)
-        
+		self.linear = nn.Linear(in_features=5*383, out_features=3, bias=True)
 	def forward(self, x):
-		x_hat = self.tokenizer(x)
-		x_hat = self.extract_method(self.transformer(x_hat))
-		y = self.linear(x_hat)
-		return y
+		y=[]
+		for data in test_data:
+			input_ids = torch.tensor(self.tokenizer.encode(data)).unsqueeze(0)
+			last_hidden_states = self.model(input_ids)[0]
+			pooled = self.m(last_hidden_states)
+			y.append(self.linear(x_hat))
+		return torch.tensor(y)
 
 
 # In[4]:
@@ -83,26 +86,25 @@ os.system('git clone https://github.com/pytorch/fairseq')
 os.system('git clone https://github.com/zihangdai/xlnet/')
 '''
 
-from transformers import BertModel, BertConfig
+from transformers import BertModel, BertConfig, BertTokenizer, RobertaTokenizer
 # from fairseq.fairseq.models.roberta import RobertaModel
-import xlnet.xlnet as xlnet
+# from transformers import XLNetTokenizer, XLNetModel
 
 bert_config = BertConfig()
 bert_model = BertModel(bert_config)
 bert_model.eval()
 bert_result = lambda x: x[0]
+bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 roberta_model = load('pytorch/fairseq', 'roberta.large.mnli')
 roberta_model.eval()
 roberta_result = roberta_model.extract_features
-
-xlnet_model = xlnet.XLNetModel()
-xlnet_result = lambda x: x.get_sequence_output()
+roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 
 models = {
-    'Bert': net(bert_model, bert_result),
-    'Roberta': net(roberta_model, roberta_result),
-    'XLNet': net(xlnet_model, xlnet_result)
+    'Bert': net(bert_tokenizer, bert_model, bert_result),
+    'Roberta': net(roberta_tokenizer, roberta_model, roberta_result),
+    # 'XLNet': net(xlnet_model, xlnet_result)
 }
 
 
