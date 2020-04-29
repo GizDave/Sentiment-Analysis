@@ -20,20 +20,21 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 import os
 
+
 # In[2]:
 
 class TweetDataset(utils.Dataset):
     def __init__(self, path='Tweets.csv'):
-        data = pd.read_csv(path)
+        data = pd.read_csv(path, engine='python')
         self.txt = data.Tweets.to_list()
         self.lbl = data.Labels.to_list()
-        
+
     def __getitem__(self, index):
-        #supporting fetching a data sample for a given key
+        # supporting fetching a data sample for a given key
         return self.txt[index], self.lbl[index]
-    
+
     def __len__(self):
-        #return the size of the dataset
+        # return the size of the dataset
         return len(self.txt)
 
 
@@ -41,33 +42,35 @@ class TweetDataset(utils.Dataset):
 
 
 class net(nn.Module):
-	def __init__(self, tokenizer, model, extract_method):
-		super(net, self).__init__()
-		self.model = model
-		self.extract_method = extract_method
-		self.tokenizer = tokenizer if tokenizer else lambda x: x
-		self.m = nn.AvgPool1d(3, stride=2)
-		# in_feature sizes
-		# Bert: (batch_size, sequence_length, hidden_size)
-		# 
-		self.linear = nn.Linear(in_features=5*383, out_features=3, bias=True)
-	def forward(self, x):
-		y=[]
-		for data in test_data:
-			input_ids = torch.tensor(self.tokenizer.encode(data)).unsqueeze(0)
-			last_hidden_states = self.model(input_ids)[0]
-			pooled = self.m(last_hidden_states)
-			y.append(self.linear(x_hat))
-		return torch.tensor(y)
+    def __init__(self, tokenizer, model, extract_method):
+        super(net, self).__init__()
+        self.model = model
+        self.extract_method = extract_method
+        self.tokenizer = tokenizer if tokenizer else lambda x: x
+        self.m = nn.AvgPool1d(3, stride=2)
+        # in_feature sizes
+        # Bert: (batch_size, sequence_length, hidden_size)
+        #
+        self.linear = nn.Linear(in_features=5 * 383, out_features=3, bias=True)
+
+    def forward(self, x):
+        y = []
+        for data in test_data:
+            input_ids = torch.tensor(self.tokenizer.encode(data)).unsqueeze(0)
+            last_hidden_states = self.model(input_ids)[0]
+            pooled = self.m(last_hidden_states)
+            y.append(self.linear(x_hat))
+        return torch.tensor(y)
 
 
 # In[4]:
 
-path='Tweets.csv'
+path = './Data/Tweets.csv'
 
 dataset = TweetDataset(path)
 train_ration = 0.7
-train_dataset, test_dataset = utils.random_split(dataset, [int(len(dataset)*0.7), len(dataset)-int(len(dataset)*0.7)])
+train_dataset, test_dataset = utils.random_split(dataset,
+                                                 [int(len(dataset) * 0.7), len(dataset) - int(len(dataset) * 0.7)])
 
 train_loader = utils.DataLoader(train_dataset)
 test_loader = utils.DataLoader(test_dataset)
@@ -87,6 +90,7 @@ os.system('git clone https://github.com/zihangdai/xlnet/')
 '''
 
 from transformers import BertModel, BertConfig, BertTokenizer, RobertaTokenizer
+
 # from fairseq.fairseq.models.roberta import RobertaModel
 # from transformers import XLNetTokenizer, XLNetModel
 
@@ -122,7 +126,7 @@ def evalute(model, test_loader, device):
 
     accuracy = accuracy_score(y_true, y_pred, normalize=True)
     f1 = f1_score(y_true, y_pred)
-    
+
     return accuracy, f1
 
 
@@ -133,7 +137,7 @@ def evalute(model, test_loader, device):
 nrows, ncols, index = math.ceil(len(models.keys())), 2, 0
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 NUM_EPOCHS = 50
-x = list(range(1, NUM_EPOCHS+1))
+x = list(range(1, NUM_EPOCHS + 1))
 pdf = ('Baseline.pdf')
 fig, axs = plt.subplot(nrows, ncols)
 
@@ -142,9 +146,9 @@ for key in models.keys():
     criterion = nn.CrossEntropyLoss()
     model = models[key]
     model.to(device)
-    
+
     accuracies, f1_scores = [], []
-    
+
     for epoch in range(NUM_EPOCHS):
         # training
         model.train()
@@ -159,26 +163,22 @@ for key in models.keys():
         accuracy, f1 = evaluate(model, test_loader, device)
         accuracies.append(accuracy)
         f1_scores.append(f1)
-    
+
     torch.save(model.state_dict(), '{}_baseline.pt'.format(key))
 
     axs[index, 0].set_title('Accuracy vs Epochs for {}'.format(key.lower().capitalize()))
     axs[index, 0].set_xlabel('Number of Epochs Trained')
     axs[index, 0].set_ylabel('Test Accuracy on Sentiment Classification Task')
     axs[index, 0].plot(x, accuracies)
-    
+
     axs[index, 1].set_title('F1-Score vs Epochs for {}'.format(key.lower().capitalize()))
     axs[index, 1].set_xlabel('Number of Epochs Trained')
     axs[index, 1].set_ylabel('Test F1-Score on Sentiment Classification Task')
     axs[index, 1].plot(x, f1_scores)
-    
+
     index += 1
 
 plt.show()
 pdf.savefig(fig)
 
 # In[ ]:
-
-
-
-
