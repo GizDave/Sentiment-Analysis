@@ -20,7 +20,6 @@ from matplotlib.backends.backend_pdf import PdfPages
 
 import os
 
-
 # In[2]:
 
 class TweetDataset(utils.Dataset):
@@ -53,13 +52,13 @@ class net(nn.Module):
         #
         self.linear = nn.Linear(in_features=5 * 383, out_features=3, bias=True)
 
-    def forward(self, x):
+    def forward(self, test_data):
         y = []
         for data in test_data:
             input_ids = torch.tensor(self.tokenizer.encode(data)).unsqueeze(0)
             last_hidden_states = self.model(input_ids)[0]
             pooled = self.m(last_hidden_states)
-            y.append(self.linear(x_hat))
+            y.append(self.linear(pooled))
         return torch.tensor(y)
 
 
@@ -68,9 +67,9 @@ class net(nn.Module):
 path = './Data/Tweets.csv'
 
 dataset = TweetDataset(path)
-train_ration = 0.7
+train_ratio = 0.7
 train_dataset, test_dataset = utils.random_split(dataset,
-                                                 [int(len(dataset) * 0.7), len(dataset) - int(len(dataset) * 0.7)])
+                                                 [int(len(dataset) * train_ratio), len(dataset) - int(len(dataset) * train_ratio)])
 
 train_loader = utils.DataLoader(train_dataset)
 test_loader = utils.DataLoader(test_dataset)
@@ -100,11 +99,10 @@ bert_model.eval()
 bert_result = lambda x: x[0]
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-roberta_model = load('pytorch/fairseq', 'roberta.large.mnli')
+roberta_model = load('pytorch/fairseq', 'roberta.large.mnli', force_reload=True)
 roberta_model.eval()
 roberta_result = roberta_model.extract_features
 roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
-
 models = {
     'Bert': net(bert_tokenizer, bert_model, bert_result),
     'Roberta': net(roberta_tokenizer, roberta_model, roberta_result),
@@ -114,8 +112,7 @@ models = {
 
 # In[ ]:
 
-
-def evalute(model, test_loader, device):
+def evaluate(model, test_loader, device):
     y_true, y_pred = [], []
 
     model.eval()
