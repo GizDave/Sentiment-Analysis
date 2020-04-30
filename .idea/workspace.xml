@@ -15,8 +15,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/baseline.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="416">
-              <caret line="98" column="28" lean-forward="true" selection-start-line="98" selection-start-column="28" selection-end-line="98" selection-end-column="28" />
+            <state relative-caret-position="42">
+              <caret line="163" column="27" lean-forward="true" selection-start-line="163" selection-start-column="27" selection-end-line="163" selection-end-column="27" />
               <folding>
                 <element signature="e#50#82#0" expanded="true" />
               </folding>
@@ -205,10 +205,30 @@
     <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/torchvision/transforms/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+    <entry file="file://$USER_HOME$/Downloads/subplot_demo.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/Downloads/subplot_demo (1).py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/torch/nn/modules/module.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="549" selection-start-line="549" selection-end-line="549" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/site-packages/torch/nn/modules/loss.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="924" column="8" selection-start-line="924" selection-start-column="8" selection-end-line="924" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/baseline.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="416">
-          <caret line="98" column="28" lean-forward="true" selection-start-line="98" selection-start-column="28" selection-end-line="98" selection-end-column="28" />
+        <state relative-caret-position="42">
+          <caret line="163" column="27" lean-forward="true" selection-start-line="163" selection-start-column="27" selection-end-line="163" selection-end-column="27" />
           <folding>
             <element signature="e#50#82#0" expanded="true" />
           </folding>

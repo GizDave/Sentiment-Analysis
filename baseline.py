@@ -24,7 +24,7 @@ import os
 
 class TweetDataset(utils.Dataset):
     def __init__(self, path='Tweets.csv'):
-        data = pd.read_csv(path, engine='python')
+        data = pd.read_csv(path, engine='python') # second parameter necessary for larger datasets
         self.txt = data.Tweets.to_list()
         self.lbl = data.Labels.to_list()
 
@@ -39,10 +39,14 @@ class TweetDataset(utils.Dataset):
 
 # In[3]:
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# Because the input is not a tensor already (tokenizing takes place inside the net) I am forced to take the device as a
+# parameter, since I don't know of another way to move tensors onto gpu. Is there a better way to do it?
 
 class net(nn.Module):
-    def __init__(self, tokenizer, model, extract_method):
+    def __init__(self, tokenizer, model, extract_method, device):
         super(net, self).__init__()
+        self.device = device
         self.model = model
         self.extract_method = extract_method
         self.tokenizer = tokenizer if tokenizer else lambda x: x
@@ -50,16 +54,19 @@ class net(nn.Module):
         # in_feature sizes
         # Bert: (batch_size, sequence_length, hidden_size)
         #
-        self.linear = nn.Linear(in_features=5 * 383, out_features=3, bias=True)
+        self.linear = nn.Linear(in_features=383, out_features=1, bias=True)
 
     def forward(self, test_data):
-        y = []
-        for data in test_data:
-            input_ids = torch.tensor(self.tokenizer.encode(data)).unsqueeze(0)
-            last_hidden_states = self.model(input_ids)[0]
-            pooled = self.m(last_hidden_states)
-            y.append(self.linear(pooled))
-        return torch.tensor(y)
+        # removed loop because batching seems to be weird? Is 1 tweet = 1 batch?
+        # y = []
+        # for data in test_data:
+        input_ids = torch.tensor(self.tokenizer.encode(test_data)).unsqueeze(0).to(self.device)
+        last_hidden_states = self.model(input_ids)[0]
+        pooled = self.m(last_hidden_states)
+        # y.append(self.linear(pooled))
+        y = torch.squeeze(self.linear(pooled))
+        # y = torch.stack(y)
+        return y
 
 
 # In[4]:
@@ -99,16 +106,17 @@ bert_model.eval()
 bert_result = lambda x: x[0]
 bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
-roberta_model = load('pytorch/fairseq', 'roberta.large.mnli', force_reload=True)
-roberta_model.eval()
-roberta_result = roberta_model.extract_features
-roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
+# roberta_model = load('pytorch/fairseq', 'roberta.large.mnli', force_reload=True)
+# roberta_model.eval()
+# roberta_result = roberta_model.extract_features
+# roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 models = {
-    'Bert': net(bert_tokenizer, bert_model, bert_result),
-    'Roberta': net(roberta_tokenizer, roberta_model, roberta_result),
+    'Bert': net(bert_tokenizer, bert_model, bert_result, device),
+    # 'Roberta': net(roberta_tokenizer, roberta_model, roberta_result),
     # 'XLNet': net(xlnet_model, xlnet_result)
 }
-
+# Removed roberta (temporarily) because it wouldn't load; might be specific to my machine (some packages I have are
+# screwed up.
 
 # In[ ]:
 
@@ -132,16 +140,15 @@ def evaluate(model, test_loader, device):
 
 # training and evaluation
 nrows, ncols, index = math.ceil(len(models.keys())), 2, 0
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 NUM_EPOCHS = 50
 x = list(range(1, NUM_EPOCHS + 1))
 pdf = ('Baseline.pdf')
-fig, axs = plt.subplot(nrows, ncols)
+fig, axs = plt.subplots(nrows, ncols)
 
 for key in models.keys():
+    model = models[key]
     optimizer = optim.SGD(model.parameters(), lr=0.01)
     criterion = nn.CrossEntropyLoss()
-    model = models[key]
     model.to(device)
 
     accuracies, f1_scores = [], []
@@ -151,6 +158,8 @@ for key in models.keys():
         model.train()
         for i, (data_batch, batch_labels) in enumerate(train_loader):
             preds = model(data_batch)
+            print(preds)
+            print(batch_labels)  # they are same shape, yet still has dimension error???
             loss = criterion(preds, batch_labels.to(device))
             loss.backward()
             optimizer.step()
