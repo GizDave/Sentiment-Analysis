@@ -78,7 +78,7 @@ train_ratio = 0.7
 train_dataset, test_dataset = utils.random_split(dataset,
                                                  [int(len(dataset) * train_ratio), len(dataset) - int(len(dataset) * train_ratio)])
 
-train_loader = utils.DataLoader(train_dataset)
+train_loader = utils.DataLoader(train_dataset, batch_size=2)
 test_loader = utils.DataLoader(test_dataset)
 
 cache = pd.read_csv(path)
@@ -140,7 +140,7 @@ def evaluate(model, test_loader, device):
 
 # training and evaluation
 nrows, ncols, index = math.ceil(len(models.keys())), 2, 0
-NUM_EPOCHS = 50
+NUM_EPOCHS = 10
 x = list(range(1, NUM_EPOCHS + 1))
 pdf = ('Baseline.pdf')
 fig, axs = plt.subplots(nrows, ncols)
@@ -158,8 +158,7 @@ for key in models.keys():
         model.train()
         for i, (data_batch, batch_labels) in enumerate(train_loader):
             preds = model(data_batch)
-            print(preds)
-            print(batch_labels)  # they are same shape, yet still has dimension error???
+            preds = preds.unsqueeze(dim=1)
             loss = criterion(preds, batch_labels.to(device))
             loss.backward()
             optimizer.step()
