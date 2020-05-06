@@ -141,7 +141,9 @@ def main():
                           custom_transformer_model,
                           opt_func=CustomAdamW,
                           metrics=[accuracy, fbeta])
-        learner.fit_one_cycle(NUM_EPOCHS)
+        learner.unfreeze()
+        learner.freeze_to(-1)
+        learner.fit_one_cycle(NUM_EPOCHS, max_lr = 0.01)
         fig, ax = plt.subplots(2, 1, figsize=(8, 12))
         print(learner.sched.rec.rec_metrics)
         ax[1].plot(list(range(95)), learner.sched.rec_metrics)
