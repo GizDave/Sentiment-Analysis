@@ -39,14 +39,12 @@ class TweetDataset(utils.Dataset):
 
 # In[3]:
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Because the input is not a tensor already (tokenizing takes place inside the net) I am forced to take the device as a
 # parameter, since I don't know of another way to move tensors onto gpu. Is there a better way to do it?
 
 class net(nn.Module):
-    def __init__(self, tokenizer, model, extract_method, device):
+    def __init__(self, tokenizer, model, extract_method):
         super(net, self).__init__()
-        self.device = device
         self.model = model
         self.extract_method = extract_method
         self.tokenizer = tokenizer if tokenizer else lambda x: x
@@ -60,7 +58,7 @@ class net(nn.Module):
         # removed loop because batching seems to be weird? Is 1 tweet = 1 batch?
         # y = []
         # for data in test_data:
-        input_ids = torch.tensor(self.tokenizer.encode(test_data)).unsqueeze(0).to(self.device)
+        input_ids = torch.tensor(self.tokenizer.encode(test_data)).unsqueeze(0)
         last_hidden_states = self.model(input_ids)[0]
         pooled = self.m(last_hidden_states)
         # y.append(self.linear(pooled))
@@ -111,7 +109,7 @@ bert_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 # roberta_result = roberta_model.extract_features
 # roberta_tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 models = {
-    'Bert': net(bert_tokenizer, bert_model, bert_result, device),
+    'Bert': net(bert_tokenizer, bert_model, bert_result),
     # 'Roberta': net(roberta_tokenizer, roberta_model, roberta_result),
     # 'XLNet': net(xlnet_model, xlnet_result)
 }
@@ -139,6 +137,7 @@ def evaluate(model, test_loader, device):
 
 
 # training and evaluation
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 nrows, ncols, index = math.ceil(len(models.keys())), 2, 0
 NUM_EPOCHS = 10
 x = list(range(1, NUM_EPOCHS + 1))
@@ -156,9 +155,10 @@ for key in models.keys():
     for epoch in range(NUM_EPOCHS):
         # training
         model.train()
+        print(epoch)
         for i, (data_batch, batch_labels) in enumerate(train_loader):
             preds = model(data_batch)
-            preds = preds.unsqueeze(dim=1)
+            preds = preds.unsqueeze(dim = 1)
             loss = criterion(preds, batch_labels.to(device))
             loss.backward()
             optimizer.step()
