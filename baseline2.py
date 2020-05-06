@@ -130,7 +130,7 @@ def main():
                      .databunch(bs=1, pad_first=pad_first, pad_idx=pad_idx))
 
         config = config_class.from_pretrained(model_name)
-        config.num_labels = 5
+        config.num_labels = 3
 
         transformer_model = model_class.from_pretrained(model_name, config = config)
         # transformer_model = model_class.from_pretrained(model_name, num_labels = 5)
