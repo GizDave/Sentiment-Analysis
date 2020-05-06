@@ -103,7 +103,7 @@ def main():
     dataset = pd.read_csv(path, engine='python')
     test_ratio = 0.3
     train, test = train_test_split(dataset, test_size = test_ratio)
-    NUM_EPOCHS = 1
+    NUM_EPOCHS = 5
     for key in MODEL_CLASSES.keys():
         model_class, tokenizer_class, config_class, model_name = MODEL_CLASSES[key]
         transformer_tokenizer = tokenizer_class.from_pretrained(model_name)
