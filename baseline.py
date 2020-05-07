@@ -132,7 +132,7 @@ def main():
                      .split_by_rand_pct(0.1)
                      .label_from_df(cols= 'Labels')
                      .add_test(test)
-                     .databunch(bs=8, pad_first=pad_first, pad_idx=pad_idx))
+                     .databunch(bs=2, pad_first=pad_first, pad_idx=pad_idx))
 
         config = config_class.from_pretrained(model_name)
         config.num_labels = 3
