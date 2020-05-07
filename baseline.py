@@ -91,10 +91,13 @@ class CustomTransformerModel(nn.Module):
     def __init__(self, CustomModel):
         super(CustomTransformerModel, self).__init__()
         self.transformer = CustomModel
+        self.dropout = nn.Dropout(.05)
+        self.classifier = nn.Linear(3, 3)
 
     def forward(self, input_ids):
         # Return only the logits from the transfomer
         logits = self.transformer(input_ids)[0]
+        logits = self.classifier(logits)
         return logits
 
 
@@ -103,6 +106,8 @@ def main():
     dataset = pd.read_csv(path, engine='python')
     test_ratio = 0.3
     train, test = train_test_split(dataset, test_size = test_ratio)
+    del(train['Index'])
+    del(test['Index'])
     NUM_EPOCHS = 5
     for key in MODEL_CLASSES.keys():
         model_class, tokenizer_class, config_class, model_name = MODEL_CLASSES[key]
