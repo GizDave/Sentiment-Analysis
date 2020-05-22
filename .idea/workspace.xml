@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b3f3b07c-5372-4b58-bbcc-166bca4fbcc7" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/test.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/baseline_post_cleaning_3_epochs.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/baseline_post_cleaning_3_epochs.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/baseline_post_cleaning_7_epochs.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/baseline_post_cleaning_7_epochs.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -23,16 +22,37 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/baseline.ipynb">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/test.ipynb">
           <provider selected="true" editor-type-id="ipnb-editor">
             <state>
-              <selected id="8" />
+              <selected id="13" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/baseline.ipynb">
+          <provider selected="true" editor-type-id="ipnb-editor">
+            <state>
+              <selected id="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/baseline.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="229">
+              <caret line="35" column="38" selection-start-line="35" selection-start-column="38" selection-end-line="35" selection-end-column="38" />
+              <folding>
+                <element signature="e#39#71#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/baseline_post_cleaning_7_epochs.ipynb">
           <provider selected="true" editor-type-id="ipnb-editor">
             <state>
@@ -47,6 +67,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="Jupyter Notebook" />
       </list>
     </option>
   </component>
@@ -72,6 +93,8 @@
         <option value="$PROJECT_DIR$/baseline.py" />
         <option value="$PROJECT_DIR$/baseline.ipynb" />
         <option value="$PROJECT_DIR$/baseline_post_cleaning_3_epochs.ipynb" />
+        <option value="$PROJECT_DIR$/test.py" />
+        <option value="$PROJECT_DIR$/test.ipynb" />
       </list>
     </option>
   </component>
@@ -391,6 +414,30 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/temp.py" />
+    <entry file="file://$PROJECT_DIR$/baseline_post_cleaning_3_epochs.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/test.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="425">
+          <caret line="25" selection-start-line="25" selection-end-line="25" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/baseline_post_cleaning_7_epochs.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="13" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/baseline.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="229">
@@ -404,18 +451,11 @@
     <entry file="file://$PROJECT_DIR$/baseline.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
-          <selected id="8" />
+          <selected id="6" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/baseline_post_cleaning_3_epochs.ipynb">
-      <provider selected="true" editor-type-id="ipnb-editor">
-        <state>
-          <selected id="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/baseline_post_cleaning_7_epochs.ipynb">
+    <entry file="file://$PROJECT_DIR$/test.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
           <selected id="13" />
